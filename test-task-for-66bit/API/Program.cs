@@ -1,3 +1,4 @@
+using API;
 using Data.DB;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,8 @@ internal class Program
 
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        ConfigureServices.Configure(builder.Services);
 
         var app = builder.Build();
 

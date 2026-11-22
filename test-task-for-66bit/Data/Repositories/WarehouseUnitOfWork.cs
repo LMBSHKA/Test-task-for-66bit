@@ -1,0 +1,23 @@
+﻿using Application.Interfaces.RepoIntrefaces;
+using Data.DB;
+
+namespace Data.Repositories
+{
+    public class WarehouseUnitOfWork : IWarehouseUnitOfWork
+    {
+        private readonly AppDbContext _dbContext;
+
+        public WarehouseUnitOfWork(
+            AppDbContext dbContext,
+            IEquipmentTypeRepo equipmentTypes)
+        {
+            _dbContext = dbContext;
+            EquipmentTypes = equipmentTypes;
+        }
+
+        public IEquipmentTypeRepo EquipmentTypes { get; }
+
+        public Task<int> SaveChangesAsync(CancellationToken ct = default)
+            => _dbContext.SaveChangesAsync(ct);
+    }
+}
