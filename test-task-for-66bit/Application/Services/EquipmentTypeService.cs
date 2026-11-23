@@ -24,7 +24,7 @@ namespace Application.Services
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _uow.EquipmentTypes.Add(newEquipmentType, ct);
+            _uow.EquipmentTypes.Add(newEquipmentType);
             await _uow.SaveChangesAsync(ct);
 
             return newEquipmentType.Id;
@@ -33,7 +33,7 @@ namespace Application.Services
         public async Task<GetEquipmentTypeDTO?> Update(UpdateEquipmentTypeDTO updateEquipmentType, Guid equipmentTypeId,
             CancellationToken ct)
         {
-            var equipmentType = await _uow.EquipmentTypes.GetById(equipmentTypeId, ct);
+            var equipmentType = await _uow.EquipmentTypes.FindAsync(equipmentTypeId, ct);
             if (equipmentType == null)
                 return null;
             if (!string.IsNullOrWhiteSpace(updateEquipmentType.Name))
@@ -55,12 +55,12 @@ namespace Application.Services
 
         public async Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct)
         {
-            var equipmentType = await _uow.EquipmentTypes.GetById(equipmentTypeId, ct);
+            var equipmentType = await _uow.EquipmentTypes.FindAsync(equipmentTypeId, ct);
 
             if (equipmentType == null)
                 return false;
 
-            _uow.EquipmentTypes.Delete(equipmentType);
+            _uow.EquipmentTypes.Remove(equipmentType);
             await _uow.SaveChangesAsync(ct);
 
             return true;
