@@ -2,8 +2,10 @@
 
 namespace Application.DTO.EquipmentType
 {
-    public class CreateEquipmentTypeDTO
+    public class CatalogEntryDto
     {
+        [Required]
+        public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
         [MaxLength(2000)]

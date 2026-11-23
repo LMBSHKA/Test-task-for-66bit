@@ -1,12 +1,8 @@
-﻿using Application.DTO.EquipmentType;
+﻿using Models.Entities;
 
 namespace Application.Interfaces.ServiceInterface
 {
-    public interface IEquipmentTypeServce
+    public interface IEquipmentTypeServce : IGenericService<EquipmentType>
     {
-        public Task<Guid> Add(CreateEquipmentTypeDTO createEquipmentType, CancellationToken ct);
-        public Task<GetEquipmentTypeDTO?> Update(UpdateEquipmentTypeDTO updateEquipmentType, Guid equipmentTypeId,
-            CancellationToken ct);
-        public Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct);
     }
 }

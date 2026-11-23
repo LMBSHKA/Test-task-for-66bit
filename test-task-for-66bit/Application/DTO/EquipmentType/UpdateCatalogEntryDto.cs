@@ -2,7 +2,7 @@
 
 namespace Application.DTO.EquipmentType
 {
-    public class UpdateEquipmentTypeDTO : IValidatableObject
+    public class UpdateCatalogEntryDto : IValidatableObject
     {
         public string? Name { get; set; } = null;
         [MaxLength(2000)]

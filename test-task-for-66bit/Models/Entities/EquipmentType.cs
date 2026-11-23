@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.Entities
 {
-    public class EquipmentType
+    public class EquipmentType : ICatalogEntry
     {
         [Key]
         public Guid Id { get; set; }

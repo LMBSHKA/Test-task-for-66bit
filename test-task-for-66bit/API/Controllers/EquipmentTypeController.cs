@@ -17,7 +17,7 @@ namespace API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(CreateEquipmentTypeDTO createEquipmentType, CancellationToken ct)
+        public async Task<IActionResult> Create(CreateCatalogEntryDto createEquipmentType, CancellationToken ct)
         {
             var id = await _equipmentTypeServce.Add(createEquipmentType, ct);
 
@@ -25,7 +25,7 @@ namespace API.Controllers
         }
 
         [HttpPatch("update/{equipmentTypeId:guid}")]
-        public async Task<IActionResult> Update(UpdateEquipmentTypeDTO updateEquipmentType, Guid equipmentTypeId,
+        public async Task<IActionResult> Update(UpdateCatalogEntryDto updateEquipmentType, Guid equipmentTypeId,
             CancellationToken ct)
         {
             var updatedEquipmentType = await _equipmentTypeServce.Update(updateEquipmentType, equipmentTypeId, ct);
