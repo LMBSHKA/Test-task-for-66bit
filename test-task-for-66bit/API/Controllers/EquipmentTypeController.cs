@@ -23,5 +23,17 @@ namespace API.Controllers
 
             return Ok(new { id });
         }
+
+        [HttpPatch("update/{equipmentTypeId:guid}")]
+        public async Task<IActionResult> Update(UpdateEquipmentTypeDTO updateEquipmentType, Guid equipmentTypeId,
+            CancellationToken ct)
+        {
+            var updatedEquipmentType = await _equipmentTypeServce.Update(updateEquipmentType, equipmentTypeId, ct);
+
+            if (updatedEquipmentType == null)
+                return NotFound();
+
+            return Ok(updatedEquipmentType);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.RepoIntrefaces;
 using Data.DB;
+using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 
 namespace Data.Repositories
@@ -15,6 +16,11 @@ namespace Data.Repositories
         public void Add(EquipmentType equipmentType, CancellationToken ct)
         {
             _dbContext.EquipmentTypes.Add(equipmentType);
+        }
+
+        public async Task<EquipmentType?> GetById(Guid id, CancellationToken ct)
+        {
+            return await _dbContext.EquipmentTypes.FirstOrDefaultAsync(x => x.Id == id, ct);
         }
     }
 }

@@ -29,5 +29,28 @@ namespace Application.Services
 
             return newEquipmentType.Id;
         }
+
+        public async Task<GetEquipmentTypeDTO?> Update(UpdateEquipmentTypeDTO updateEquipmentType, Guid equipmentTypeId,
+            CancellationToken ct)
+        {
+            var equipmentType = await _uow.EquipmentTypes.GetById(equipmentTypeId, ct);
+            if (equipmentType == null)
+                return null;
+            if (!string.IsNullOrWhiteSpace(updateEquipmentType.Name))
+                equipmentType.Name = updateEquipmentType.Name;
+            if (updateEquipmentType.Description != null)
+                equipmentType.Description = updateEquipmentType.Description;
+
+            equipmentType.UpdatedAt = DateTime.UtcNow;
+
+            await _uow.SaveChangesAsync(ct);
+
+            return new GetEquipmentTypeDTO
+            {
+                Id = equipmentType.Id,
+                Name = equipmentType.Name,
+                Description = equipmentType.Description
+            };
+        }
     }
 }
