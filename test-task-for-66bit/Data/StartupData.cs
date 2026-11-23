@@ -10,6 +10,7 @@ namespace Data
         {
             services.AddScoped<IEquipmentTypeRepo, EquipmentTypeRepo>();
             services.AddScoped<IWarehouseUnitOfWork, WarehouseUnitOfWork>();
+            services.AddScoped<IManufacturerRepo, ManufacturerRepo>();
             services.AddScoped(typeof(IGenericRepo<>), typeof(GenericRepo<>));
         }
     }

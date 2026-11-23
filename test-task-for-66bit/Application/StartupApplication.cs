@@ -9,6 +9,8 @@ namespace Application
         public static void Configure(IServiceCollection services)
         {
             services.AddScoped<IEquipmentTypeServce, EquipmentTypeService>();
+            services.AddScoped<IManufacturerService, ManufacturerService>();
+            services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         }
     }
 }
