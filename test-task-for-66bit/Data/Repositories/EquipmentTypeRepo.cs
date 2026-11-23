@@ -22,5 +22,10 @@ namespace Data.Repositories
         {
             return await _dbContext.EquipmentTypes.FirstOrDefaultAsync(x => x.Id == id, ct);
         }
+
+        public void Delete(EquipmentType equipmentType)
+        {
+            _dbContext.EquipmentTypes.Remove(equipmentType);
+        }
     }
 }

@@ -35,5 +35,16 @@ namespace API.Controllers
 
             return Ok(updatedEquipmentType);
         }
+
+        [HttpDelete("delete/{equipmentTypeId:guid}")]
+        public async Task<IActionResult> Delete(Guid equipmentTypeId, CancellationToken ct)
+        {
+            var deleted = await _equipmentTypeServce.Delete(equipmentTypeId, ct);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }

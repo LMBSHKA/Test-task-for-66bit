@@ -52,5 +52,18 @@ namespace Application.Services
                 Description = equipmentType.Description
             };
         }
+
+        public async Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct)
+        {
+            var equipmentType = await _uow.EquipmentTypes.GetById(equipmentTypeId, ct);
+
+            if (equipmentType == null)
+                return false;
+
+            _uow.EquipmentTypes.Delete(equipmentType);
+            await _uow.SaveChangesAsync(ct);
+
+            return true;
+        }
     }
 }
