@@ -52,10 +52,21 @@ namespace API.Controllers
 
             if (result == UpdateEquipmentItemResult.NotFound)
                 return NotFound();
+
             if (result == UpdateEquipmentItemResult.InvalidReference)
                 return BadRequest();
 
             return Ok(id);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        {
+            var deleted = await _equipmentItemService.Delete(id, ct);
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
         }
 
         private IActionResult ValidationError(ValidationResult validation)

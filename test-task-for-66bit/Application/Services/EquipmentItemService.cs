@@ -65,6 +65,23 @@ namespace Application.Services
             return UpdateEquipmentItemResult.Updated;
         }
 
+        public async Task<bool> Delete(Guid equipmentItemId, CancellationToken ct)
+        {
+            var equipmentItem = await _uow.EquipmentItems.FindAsync(equipmentItemId, ct);
+
+            if (equipmentItem == null || equipmentItem.IsDeleted)
+                return false;
+
+            var now = DateTime.UtcNow;
+            equipmentItem.IsDeleted = true;
+            equipmentItem.DeletedAt = now;
+            equipmentItem.UpdatedAt = now;
+
+            await _uow.SaveChangesAsync(ct);
+
+            return true;
+        }
+
         private async Task<bool> ReferencesExist(Guid? equipmentTypeId, Guid? manufacturerId, Guid? supplyCountryId,
             CancellationToken ct)
         {

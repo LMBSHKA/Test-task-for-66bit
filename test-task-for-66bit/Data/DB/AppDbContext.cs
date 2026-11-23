@@ -19,6 +19,7 @@ namespace Data.DB
             base.OnModelCreating(modelBuilder);
 
             var item = modelBuilder.Entity<EquipmentItem>();
+            item.HasQueryFilter(x => !x.IsDeleted);
 
             item.HasOne(x => x.EquipmentType)
                 .WithMany(x => x.EquipmentItems)
