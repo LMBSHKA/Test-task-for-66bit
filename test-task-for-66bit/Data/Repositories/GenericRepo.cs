@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.RepoIntrefaces;
 using Data.DB;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Data.Repositories
 {
@@ -22,5 +23,8 @@ namespace Data.Repositories
         public void Add(TEntity entity) => _dbContext.Add(entity);
 
         public void Remove(TEntity entity) => _dbContext.Remove(entity);
+
+        public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct)
+            => await _dbContext.AnyAsync(predicate, ct);
     }
 }

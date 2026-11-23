@@ -12,6 +12,7 @@ namespace Data
             services.AddScoped<IWarehouseUnitOfWork, WarehouseUnitOfWork>();
             services.AddScoped<IManufacturerRepo, ManufacturerRepo>();
             services.AddScoped(typeof(IGenericRepo<>), typeof(GenericRepo<>));
+            services.AddScoped<IEquipmentItemRepo, EquipmentItemRepo>();
         }
     }
 }

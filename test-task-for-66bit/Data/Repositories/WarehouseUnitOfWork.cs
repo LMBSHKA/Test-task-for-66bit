@@ -10,15 +10,18 @@ namespace Data.Repositories
         public WarehouseUnitOfWork(
             AppDbContext dbContext,
             IEquipmentTypeRepo equipmentTypes,
-            IManufacturerRepo manufacturers)
+            IManufacturerRepo manufacturers,
+            IEquipmentItemRepo equipmentItems)
         {
             _dbContext = dbContext;
             EquipmentTypes = equipmentTypes;
             Manufacturers = manufacturers;
+            EquipmentItems = equipmentItems;
         }
 
         public IEquipmentTypeRepo EquipmentTypes { get; }
         public IManufacturerRepo Manufacturers { get; }
+        public IEquipmentItemRepo EquipmentItems { get; }
 
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => _dbContext.SaveChangesAsync(ct);
