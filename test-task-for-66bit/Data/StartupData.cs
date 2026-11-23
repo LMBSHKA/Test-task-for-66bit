@@ -13,6 +13,7 @@ namespace Data
             services.AddScoped<IManufacturerRepo, ManufacturerRepo>();
             services.AddScoped(typeof(IGenericRepo<>), typeof(GenericRepo<>));
             services.AddScoped<IEquipmentItemRepo, EquipmentItemRepo>();
+            services.AddScoped<ICountryRepo, CountryRepo>();
         }
     }
 }

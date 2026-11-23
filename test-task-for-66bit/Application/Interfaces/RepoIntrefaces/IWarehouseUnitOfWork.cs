@@ -5,6 +5,7 @@
         IEquipmentTypeRepo EquipmentTypes { get; }
         IEquipmentItemRepo EquipmentItems { get; }
         IManufacturerRepo Manufacturers { get; }
+        ICountryRepo Countries { get; }
         Task<int> SaveChangesAsync(CancellationToken ct = default);
     }
 }
