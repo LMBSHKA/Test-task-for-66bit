@@ -16,6 +16,7 @@ namespace Application
             services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
             services.AddScoped<IEquipmentItemService, EquipmentItemService>();
             services.AddScoped<IValidator<CreateEquipmentItemDto>, CreateEquipmentItemValidator>();
+            services.AddScoped<IValidator<UpdateEquipmentItemDto>, UpdateEquipmentItemValidator>();
         }
     }
 }

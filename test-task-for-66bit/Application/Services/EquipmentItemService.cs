@@ -15,11 +15,8 @@ namespace Application.Services
 
         public async Task<Guid?> Add(CreateEquipmentItemDto createEquipmentItem, CancellationToken ct)
         {
-            var typeExists = await _uow.EquipmentTypes.AnyAsync(x => x.Id == createEquipmentItem.EquipmentTypeId, ct);
-            var manufacturerExists = await _uow.Manufacturers.AnyAsync(x => x.Id == createEquipmentItem.ManufacturerId, ct);
-            var countryExists = await _uow.Countries.AnyAsync(x => x.Id == createEquipmentItem.SupplyCountryId, ct);
-
-            if (!typeExists || !manufacturerExists)
+            if (!await ReferencesExist(createEquipmentItem.EquipmentTypeId, createEquipmentItem.ManufacturerId,
+                    createEquipmentItem.SupplyCountryId, ct))
                 return null;
 
             var newEquipmentItem = new EquipmentItem
@@ -38,6 +35,49 @@ namespace Application.Services
             await _uow.SaveChangesAsync(ct);
 
             return newEquipmentItem.Id;
+        }
+
+        public async Task<UpdateEquipmentItemResult> Update(UpdateEquipmentItemDto updateEquipmentItem,
+            Guid equipmentItemId, CancellationToken ct)
+        {
+            var equipmentItem = await _uow.EquipmentItems.FindAsync(equipmentItemId, ct);
+            if (equipmentItem == null || equipmentItem.IsDeleted)
+                return UpdateEquipmentItemResult.NotFound;
+
+            if (!await ReferencesExist(updateEquipmentItem.EquipmentTypeId, updateEquipmentItem.ManufacturerId,
+                    updateEquipmentItem.SupplyCountryId, ct))
+                return UpdateEquipmentItemResult.InvalidReference;
+
+            if (updateEquipmentItem.HasPhoto)
+                equipmentItem.Photo = updateEquipmentItem.Photo;
+
+            if (updateEquipmentItem.Model != null)
+                equipmentItem.Model = updateEquipmentItem.Model.Trim();
+
+            equipmentItem.EquipmentTypeId = updateEquipmentItem.EquipmentTypeId ?? equipmentItem.EquipmentTypeId;
+            equipmentItem.ManufacturerId = updateEquipmentItem.ManufacturerId ?? equipmentItem.ManufacturerId;
+            equipmentItem.SupplyCountryId = updateEquipmentItem.SupplyCountryId ?? equipmentItem.SupplyCountryId;
+            equipmentItem.Price = updateEquipmentItem.Price ?? equipmentItem.Price;
+            equipmentItem.UpdatedAt = DateTime.UtcNow;
+
+            await _uow.SaveChangesAsync(ct);
+
+            return UpdateEquipmentItemResult.Updated;
+        }
+
+        private async Task<bool> ReferencesExist(Guid? equipmentTypeId, Guid? manufacturerId, Guid? supplyCountryId,
+            CancellationToken ct)
+        {
+            if (equipmentTypeId.HasValue &&
+                !await _uow.EquipmentTypes.AnyAsync(x => x.Id == equipmentTypeId.Value, ct))
+                return false;
+
+            if (manufacturerId.HasValue &&
+                !await _uow.Manufacturers.AnyAsync(x => x.Id == manufacturerId.Value, ct))
+                return false;
+
+            return !supplyCountryId.HasValue ||
+                await _uow.Countries.AnyAsync(x => x.Id == supplyCountryId.Value, ct);
         }
     }
 }
