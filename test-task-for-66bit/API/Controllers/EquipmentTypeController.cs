@@ -46,5 +46,13 @@ namespace API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll(CancellationToken ct)
+        {
+            var allManufactures = await _equipmentTypeServce.GetAll(ct);
+
+            return Ok(allManufactures);
+        }
     }
 }

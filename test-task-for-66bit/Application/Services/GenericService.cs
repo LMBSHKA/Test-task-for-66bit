@@ -1,4 +1,5 @@
-﻿using Application.DTO.EquipmentType;
+﻿using Application.DTO.CatalogEntry;
+using Application.DTO.EquipmentType;
 using Application.Interfaces.RepoIntrefaces;
 using Application.Interfaces.ServiceInterface;
 using Models.Interfaces;
@@ -68,6 +69,21 @@ namespace Application.Services
             await _uow.SaveChangesAsync(ct);
 
             return true;
+        }
+
+        public async Task<AllCatalogEntryDto> GetAll(CancellationToken ct)
+        {
+            var entities = await _repo.ListAsync(ct);
+
+            return new AllCatalogEntryDto
+            {
+                ListCatalogEntry = entities.Select(entity => new CatalogEntryDto
+                {
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    Description = entity.Description
+                }).ToList()
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.DTO.EquipmentType;
+﻿using Application.DTO.CatalogEntry;
+using Application.DTO.EquipmentType;
 using Models.Interfaces;
 
 namespace Application.Interfaces.ServiceInterface
@@ -9,5 +10,6 @@ namespace Application.Interfaces.ServiceInterface
         public Task<CatalogEntryDto?> Update(UpdateCatalogEntryDto updateEquipmentType, Guid equipmentTypeId,
             CancellationToken ct);
         public Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct);
+        public Task<AllCatalogEntryDto> GetAll(CancellationToken ct);
     }
 }
