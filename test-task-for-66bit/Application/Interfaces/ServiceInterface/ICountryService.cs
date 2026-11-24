@@ -5,5 +5,6 @@ namespace Application.Interfaces.ServiceInterface
     public interface ICountryService
     {
         public Task<Guid> Add(CreateCountryDto createCountry, CancellationToken ct);
+        public Task<AllCountryDto> GetAll(CancellationToken ct);
     }
 }

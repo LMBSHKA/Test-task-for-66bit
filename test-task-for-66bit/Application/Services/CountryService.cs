@@ -33,5 +33,19 @@ namespace Application.Services
 
             return country.Id;
         }
+
+        public async Task<AllCountryDto> GetAll(CancellationToken ct)
+        {
+            var countries = await _uow.Countries.ListAsync(ct);
+
+            return new AllCountryDto
+            {
+                ListCountry = countries.Select(x => new CountryDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList()
+            };
+        }
     }
 }

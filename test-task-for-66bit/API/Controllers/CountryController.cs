@@ -22,5 +22,13 @@ namespace API.Controllers
 
             return Ok(countryId);
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllCountry(CancellationToken ct)
+        {
+            var countries = await _countryService.GetAll(ct);
+
+            return Ok(countries);
+        }
     }
 }
