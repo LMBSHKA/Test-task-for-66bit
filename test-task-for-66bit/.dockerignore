@@ -1,0 +1,9 @@
+**/.vs
+**/bin
+**/obj
+**/appsettings*.json
+**/.env
+**/.env.*
+**/NuGet.config
+**/NuGet.Config
+**/wwwroot/uploads

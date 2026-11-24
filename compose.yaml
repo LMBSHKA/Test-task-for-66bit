@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-warehouse}
+      POSTGRES_USER: ${POSTGRES_USER:-warehouse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-warehouse_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    build:
+      context: ./test-task-for-66bit
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DB: >-
+        Host=db;Port=5432;Database="${POSTGRES_DB:-warehouse}";
+        Username="${POSTGRES_USER:-warehouse}";Password="${POSTGRES_PASSWORD:-warehouse_dev}"
+    ports:
+      - "127.0.0.1:${WAREHOUSE_PORT:-8080}:8080"
+    volumes:
+      - equipment_photos:/app/wwwroot/uploads
+
+volumes:
+  postgres_data:
+  equipment_photos:
