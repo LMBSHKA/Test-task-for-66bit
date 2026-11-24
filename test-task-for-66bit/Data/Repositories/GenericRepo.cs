@@ -7,7 +7,7 @@ namespace Data.Repositories
 {
     public class GenericRepo<TEntity> : IGenericRepo<TEntity> where TEntity : class
     {
-        private readonly DbSet<TEntity> _dbContext;
+        protected readonly DbSet<TEntity> _dbContext;
 
         public GenericRepo(AppDbContext dbContext)
         {
