@@ -1,4 +1,5 @@
 ﻿using Application.DTO.EquipmentItem;
+using Application.DTO.EquipmentItem.filters;
 using Application.Interfaces.ServiceInterface;
 using FluentValidation;
 using FluentValidation.Results;
@@ -67,6 +68,13 @@ namespace API.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll([FromQuery] EquipmentItemFilterDto filter, CancellationToken ct)
+        {
+            var equipmentItems = await _equipmentItemService.GetAll(filter, ct);
+            return Ok(equipmentItems);
         }
 
         private IActionResult ValidationError(ValidationResult validation)

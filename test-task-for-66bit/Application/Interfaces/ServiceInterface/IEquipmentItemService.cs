@@ -1,4 +1,5 @@
 ﻿using Application.DTO.EquipmentItem;
+using Application.DTO.EquipmentItem.filters;
 
 namespace Application.Interfaces.ServiceInterface
 {
@@ -8,5 +9,6 @@ namespace Application.Interfaces.ServiceInterface
         public Task<UpdateEquipmentItemResult> Update(UpdateEquipmentItemDto updateEquipmentItem, Guid equipmentItemId,
             CancellationToken ct);
         public Task<bool> Delete(Guid equipmentItemId, CancellationToken ct);
+        public Task<AllEquipmentItemDto> GetAll(EquipmentItemFilterDto filter, CancellationToken ct);
     }
 }

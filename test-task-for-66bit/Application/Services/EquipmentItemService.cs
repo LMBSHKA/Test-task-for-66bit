@@ -1,4 +1,5 @@
 ﻿using Application.DTO.EquipmentItem;
+using Application.DTO.EquipmentItem.filters;
 using Application.Interfaces.RepoIntrefaces;
 using Application.Interfaces.ServiceInterface;
 using Models.Entities;
@@ -80,6 +81,23 @@ namespace Application.Services
             await _uow.SaveChangesAsync(ct);
 
             return true;
+        }
+
+        public async Task<AllEquipmentItemDto> GetAll(EquipmentItemFilterDto filter, CancellationToken ct)
+        {
+            var (equipmentItems, totalCount) = await _uow.EquipmentItems.ListAsync(filter, ct);
+            var equipmentTypes = await _uow.EquipmentTypes.GetAvailableEquipmentTypesAsync(filter.ManufacturerId, ct);
+            var manufacturers = await _uow.Manufacturers.GetAvailableManufacturersAsync(filter.EquipmentTypeId, ct);
+
+            return new AllEquipmentItemDto
+            {
+                EquipmentItems = equipmentItems,
+                AvailableEquipmentTypes = equipmentTypes,
+                AvailableManufacturers = manufacturers,
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize
+            };
         }
 
         private async Task<bool> ReferencesExist(Guid? equipmentTypeId, Guid? manufacturerId, Guid? supplyCountryId,
