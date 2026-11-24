@@ -1,9 +1,11 @@
-﻿using Application.DTO.EquipmentItem;
+﻿using API.Hubs;
+using Application.DTO.EquipmentItem;
 using Application.DTO.EquipmentItem.filters;
 using Application.Interfaces.ServiceInterface;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace API.Controllers
 {
@@ -14,11 +16,14 @@ namespace API.Controllers
         private readonly IEquipmentItemService _equipmentItemService;
         private readonly IValidator<CreateEquipmentItemDto> _createValidator;
         private readonly IValidator<UpdateEquipmentItemDto> _updateValidator;
+        private readonly IHubContext<EquipmentHub> _equipmentHub;
 
         public EquipmentItemController(IEquipmentItemService equipmentItemService,
             IValidator<CreateEquipmentItemDto> createValidator,
-            IValidator<UpdateEquipmentItemDto> updateValidator)
+            IValidator<UpdateEquipmentItemDto> updateValidator,
+            IHubContext<EquipmentHub> equipmentHub)
         {
+            _equipmentHub = equipmentHub;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
             _equipmentItemService = equipmentItemService;
@@ -75,6 +80,8 @@ namespace API.Controllers
             if (equipmentItemId == null)
                 return BadRequest();
 
+            await _equipmentHub.Clients.All.SendAsync("EquipmentChanged", ct);
+
             return Ok(equipmentItemId);
         }
 
@@ -109,6 +116,8 @@ namespace API.Controllers
             if (result == UpdateEquipmentItemResult.InvalidReference)
                 return BadRequest();
 
+            await _equipmentHub.Clients.All.SendAsync("EquipmentChanged", ct);
+
             return Ok(id);
         }
 
@@ -125,6 +134,8 @@ namespace API.Controllers
             var deleted = await _equipmentItemService.Delete(id, ct);
             if (!deleted)
                 return NotFound();
+
+            await _equipmentHub.Clients.All.SendAsync("EquipmentChanged", ct);
 
             return NoContent();
         }

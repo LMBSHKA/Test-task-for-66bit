@@ -14,6 +14,7 @@ builder.Services.AddScoped(_ => new HttpClient
 });
 builder.Services.AddScoped<CatalogClient>();
 builder.Services.AddScoped<EquipmentClient>();
+builder.Services.AddScoped<EquipmentUpdatesClient>();
 builder.Services.AddScoped<CountryClient>();
 
 await builder.Build().RunAsync();

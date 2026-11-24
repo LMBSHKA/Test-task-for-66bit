@@ -7,7 +7,7 @@ using Warehouse.Frontend.Equipment.Models;
 
 namespace Warehouse.Frontend.Equipment.Pages;
 
-public partial class EquipmentPage : IDisposable
+public partial class EquipmentPage : IAsyncDisposable
 {
     private static readonly TimeSpan SearchDelay = TimeSpan.FromMilliseconds(300);
     private static readonly NumberFormatInfo PriceFormat = new()
@@ -20,9 +20,14 @@ public partial class EquipmentPage : IDisposable
     private EquipmentClient Client { get; set; } = default!;
 
     [Inject]
+    private EquipmentUpdatesClient UpdatesClient { get; set; } = default!;
+
+    [Inject]
     private ILogger<EquipmentPage> Logger { get; set; } = default!;
 
     private readonly HashSet<Guid> unavailablePhotos = [];
+    private readonly CancellationTokenSource updatesLifetime = new();
+    private Task? updatesTask;
     private CancellationTokenSource? activeLoad;
     private EquipmentList? result;
     private EquipmentItem? editedItem;
@@ -44,7 +49,22 @@ public partial class EquipmentPage : IDisposable
 
     private bool InvalidPriceRange => minPrice > maxPrice;
 
-    protected override Task OnInitializedAsync() => LoadAsync();
+    protected override Task OnInitializedAsync()
+    {
+        var initialLoad = LoadAsync();
+        updatesTask = UpdatesClient.ListenAsync(RefreshFromUpdatesAsync, updatesLifetime.Token);
+        return initialLoad;
+    }
+
+    private Task RefreshFromUpdatesAsync() => InvokeAsync(async () =>
+    {
+        if (updatesLifetime.IsCancellationRequested)
+            return;
+
+        await LoadAsync();
+        if (!updatesLifetime.IsCancellationRequested)
+            StateHasChanged();
+    });
 
     private Task SearchChangedAsync() => ChangePageAsync(1, SearchDelay);
 
@@ -171,5 +191,14 @@ public partial class EquipmentPage : IDisposable
 
     private void MarkPhotoUnavailable(Guid id) => unavailablePhotos.Add(id);
 
-    public void Dispose() => activeLoad?.Cancel();
+    public async ValueTask DisposeAsync()
+    {
+        updatesLifetime.Cancel();
+        activeLoad?.Cancel();
+
+        if (updatesTask is not null)
+            await updatesTask;
+
+        updatesLifetime.Dispose();
+    }
 }
