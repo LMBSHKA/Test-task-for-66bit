@@ -9,7 +9,7 @@ namespace Application.Interfaces.ServiceInterface
         public Task<Guid> Add(CreateCatalogEntryDto createEquipmentType, CancellationToken ct);
         public Task<CatalogEntryDto?> Update(UpdateCatalogEntryDto updateEquipmentType, Guid equipmentTypeId,
             CancellationToken ct);
-        public Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct);
+        public Task<DeleteCatalogEntryResult> Delete(Guid equipmentTypeId, CancellationToken ct);
         public Task<AllCatalogEntryDto> GetAll(CancellationToken ct);
     }
 }

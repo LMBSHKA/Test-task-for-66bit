@@ -1,4 +1,6 @@
-﻿namespace Application.Interfaces.RepoIntrefaces
+﻿using Models.Interfaces;
+
+namespace Application.Interfaces.RepoIntrefaces
 {
     public interface IWarehouseUnitOfWork
     {
@@ -7,5 +9,6 @@
         IManufacturerRepo Manufacturers { get; }
         ICountryRepo Countries { get; }
         Task<int> SaveChangesAsync(CancellationToken ct = default);
+        Task<bool> TrySaveCatalogDeletionAsync(ICatalogEntry entry, CancellationToken ct);
     }
 }

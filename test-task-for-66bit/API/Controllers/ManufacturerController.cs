@@ -1,4 +1,5 @@
-﻿using Application.DTO.EquipmentType;
+﻿using Application.DTO.CatalogEntry;
+using Application.DTO.EquipmentType;
 using Application.Interfaces.ServiceInterface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,10 +39,15 @@ namespace API.Controllers
         [HttpDelete("delete/{manufacturerId:guid}")]
         public async Task<IActionResult> Delete(Guid manufacturerId, CancellationToken ct)
         {
-            var deleted = await _manufacturerService.Delete(manufacturerId, ct);
+            var result = await _manufacturerService.Delete(manufacturerId, ct);
 
-            if (!deleted)
+            if (result == DeleteCatalogEntryResult.NotFound)
                 return NotFound();
+
+            if (result == DeleteCatalogEntryResult.InUse)
+                return Problem(statusCode: StatusCodes.Status409Conflict,
+                    title: "Производитель используется в позициях склада.",
+                    detail: "Сначала измените или удалите связанные позиции.");
 
             return NoContent();
         }

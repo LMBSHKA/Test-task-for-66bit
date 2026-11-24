@@ -1,5 +1,8 @@
 ﻿using Application.Interfaces.RepoIntrefaces;
 using Data.DB;
+using Microsoft.EntityFrameworkCore;
+using Models.Interfaces;
+using Npgsql;
 
 namespace Data.Repositories
 {
@@ -28,5 +31,20 @@ namespace Data.Repositories
 
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => _dbContext.SaveChangesAsync(ct);
+
+        public async Task<bool> TrySaveCatalogDeletionAsync(ICatalogEntry entry, CancellationToken ct)
+        {
+            try
+            {
+                await SaveChangesAsync(ct);
+                return true;
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+                { SqlState: PostgresErrorCodes.ForeignKeyViolation })
+            {
+                _dbContext.Entry(entry).State = EntityState.Unchanged;
+                return false;
+            }
+        }
     }
 }

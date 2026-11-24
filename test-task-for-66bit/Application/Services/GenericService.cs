@@ -58,17 +58,17 @@ namespace Application.Services
             };
         }
 
-        public async Task<bool> Delete(Guid equipmentTypeId, CancellationToken ct)
+        public async Task<DeleteCatalogEntryResult> Delete(Guid equipmentTypeId, CancellationToken ct)
         {
             var entity = await _repo.FindAsync(equipmentTypeId, ct);
 
             if (entity == null)
-                return false;
+                return DeleteCatalogEntryResult.NotFound;
 
             _repo.Remove(entity);
-            await _uow.SaveChangesAsync(ct);
-
-            return true;
+            return await _uow.TrySaveCatalogDeletionAsync(entity, ct)
+                ? DeleteCatalogEntryResult.Deleted
+                : DeleteCatalogEntryResult.InUse;
         }
 
         public async Task<AllCatalogEntryDto> GetAll(CancellationToken ct)

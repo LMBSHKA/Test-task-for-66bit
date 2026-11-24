@@ -1,4 +1,5 @@
-﻿using Application.DTO.EquipmentType;
+﻿using Application.DTO.CatalogEntry;
+using Application.DTO.EquipmentType;
 using Application.Interfaces.ServiceInterface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,10 +40,15 @@ namespace API.Controllers
         [HttpDelete("delete/{equipmentTypeId:guid}")]
         public async Task<IActionResult> Delete(Guid equipmentTypeId, CancellationToken ct)
         {
-            var deleted = await _equipmentTypeServce.Delete(equipmentTypeId, ct);
+            var result = await _equipmentTypeServce.Delete(equipmentTypeId, ct);
 
-            if (!deleted)
+            if (result == DeleteCatalogEntryResult.NotFound)
                 return NotFound();
+
+            if (result == DeleteCatalogEntryResult.InUse)
+                return Problem(statusCode: StatusCodes.Status409Conflict,
+                    title: "Тип техники используется в позициях склада.",
+                    detail: "Сначала измените или удалите связанные позиции.");
 
             return NoContent();
         }
