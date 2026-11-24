@@ -13,6 +13,7 @@ namespace Data.Repositories
         {
         }
 
+        // Заменяем %, _ и \, чтобы ILIKE искал введённые символы буквально
         public async Task<(List<EquipmentItemDto> EquipmentItems, int TotalCount)> ListAsync(
             EquipmentItemFilterDto filter, CancellationToken ct)
         {

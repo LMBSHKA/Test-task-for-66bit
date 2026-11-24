@@ -32,6 +32,8 @@ namespace Data.Repositories
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => _dbContext.SaveChangesAsync(ct);
 
+        // Сделал такой метод, если база запрещает удаление из-за связанных позиций, возвращаем false,
+        // чтобы API мог ответить 409 Conflict.
         public async Task<bool> TrySaveCatalogDeletionAsync(ICatalogEntry entry, CancellationToken ct)
         {
             try
@@ -40,7 +42,7 @@ namespace Data.Repositories
                 return true;
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException
-                { SqlState: PostgresErrorCodes.ForeignKeyViolation })
+            { SqlState: PostgresErrorCodes.ForeignKeyViolation })
             {
                 _dbContext.Entry(entry).State = EntityState.Unchanged;
                 return false;

@@ -1,4 +1,5 @@
 using API;
+using Application.DTO.EquipmentItem;
 using Data.DB;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,14 @@ internal class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            var apiAssembly = typeof(Program).Assembly.GetName().Name;
+            var applicationAssembly = typeof(CreateEquipmentItemDto).Assembly.GetName().Name;
+
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{apiAssembly}.xml"));
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{applicationAssembly}.xml"));
+        });
 
         //Connect Db
         var connectionString = builder.Configuration.GetConnectionString("DB")
