@@ -1,0 +1,145 @@
+@page "/"
+@using Warehouse.Frontend.Shared
+
+<PageTitle>Позиции · Склад техники</PageTitle>
+
+<h1 id="equipment-title">Позиции</h1>
+
+<section class="data-panel equipment-filters" aria-label="Фильтры позиций">
+    <div class="filter-field filter-search">
+        <label for="equipment-search">Поиск</label>
+        <input id="equipment-search" type="search" placeholder="Тип, производитель или модель"
+               @bind="search" @bind:event="oninput" @bind:after="SearchChangedAsync" />
+    </div>
+    <div class="filter-field">
+        <label for="equipment-type">Тип техники</label>
+        <select id="equipment-type" disabled="@(isLoading || result is null)"
+                @bind="equipmentTypeId" @bind:after="FiltersChangedAsync">
+            <option value="">Все типы</option>
+            @if (result is not null)
+            {
+                @foreach (var option in result.AvailableEquipmentTypes)
+                {
+                    <option @key="option.Id" value="@option.Id">@option.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="filter-field">
+        <label for="equipment-manufacturer">Производитель</label>
+        <select id="equipment-manufacturer" disabled="@(isLoading || result is null)"
+                @bind="manufacturerId" @bind:after="FiltersChangedAsync">
+            <option value="">Все производители</option>
+            @if (result is not null)
+            {
+                @foreach (var option in result.AvailableManufacturers)
+                {
+                    <option @key="option.Id" value="@option.Id">@option.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="filter-field">
+        <label for="equipment-min-price">Цена от</label>
+        <input id="equipment-min-price" type="number" step="any" inputmode="decimal"
+               aria-invalid="@(InvalidPriceRange ? "true" : null)"
+               aria-describedby="@(InvalidPriceRange ? "equipment-price-error" : null)"
+               @bind="minPrice" @bind:after="FiltersChangedAsync" />
+    </div>
+    <div class="filter-field">
+        <label for="equipment-max-price">Цена до</label>
+        <input id="equipment-max-price" type="number" step="any" inputmode="decimal"
+               aria-invalid="@(InvalidPriceRange ? "true" : null)"
+               aria-describedby="@(InvalidPriceRange ? "equipment-price-error" : null)"
+               @bind="maxPrice" @bind:after="FiltersChangedAsync" />
+    </div>
+    <button type="button" class="equipment-button" disabled="@(!HasFilters)" @onclick="ResetFiltersAsync">Сбросить</button>
+    @if (InvalidPriceRange)
+    {
+        <p id="equipment-price-error" class="filter-error" role="alert">
+            Цена «до» должна быть не меньше цены «от».
+        </p>
+    }
+</section>
+
+<section class="data-panel equipment-results" aria-labelledby="equipment-title"
+         aria-busy="@(isLoading ? "true" : "false")" hidden="@InvalidPriceRange">
+    @if (isLoading)
+    {
+        <p class="load-state" role="status">Загрузка позиций…</p>
+    }
+    else if (loadFailed)
+    {
+        <div class="load-state">
+            <p role="alert">Не удалось загрузить позиции.</p>
+            <button type="button" class="retry-button" @onclick="RetryAsync">Повторить</button>
+        </div>
+    }
+    else if (result is { } current)
+    {
+        @if (current.EquipmentItems.Count == 0)
+        {
+            <p class="load-state" role="status">
+                @(HasFilters ? "По заданным условиям ничего не найдено." : "Позиции пока не добавлены.")
+            </p>
+        }
+        else
+        {
+            <div class="data-table-scroll" role="region" aria-label="Таблица позиций" tabindex="0">
+                <table class="data-table equipment-table" aria-labelledby="equipment-title">
+                    <thead>
+                        <tr>
+                            <th scope="col">Фото</th>
+                            <th scope="col">Тип техники</th>
+                            <th scope="col">Производитель</th>
+                            <th scope="col">Модель</th>
+                            <th scope="col">Страна поставки</th>
+                            <th scope="col" class="price-cell">Цена</th>
+                            <th scope="col">Дата создания</th>
+                            <th scope="col">Дата обновления</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in current.EquipmentItems)
+                        {
+                            <tr @key="item.Id">
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Photo) && !unavailablePhotos.Contains(item.Id))
+                                    {
+                                        <img class="equipment-photo" src="@item.Photo" alt="@item.Model"
+                                             loading="lazy" @onerror="() => MarkPhotoUnavailable(item.Id)" />
+                                    }
+                                    else
+                                    {
+                                        <span class="equipment-photo photo-placeholder" aria-label="Фото отсутствует">—</span>
+                                    }
+                                </td>
+                                <td>@item.EquipmentTypeName</td>
+                                <td>@item.ManufacturerName</td>
+                                <th scope="row">@item.Model</th>
+                                <td>@item.SupplyCountryName</td>
+                                <td class="price-cell">@item.Price.ToString("#,0.##", PriceFormat)</td>
+                                <td class="date-cell">@DisplayFormat.Date(item.CreatedAt)</td>
+                                <td class="date-cell">@DisplayFormat.Date(item.UpdatedAt)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="equipment-pagination">
+                <p role="status">Найдено позиций — @current.TotalCount</p>
+                @if (current.PageCount > 1)
+                {
+                    <nav class="page-controls" aria-label="Страницы списка позиций">
+                        <button type="button" class="equipment-button" disabled="@(current.Page == 1)"
+                                @onclick="() => ChangePageAsync(current.Page - 1)">Назад</button>
+                        <span>Страница @current.Page из @current.PageCount</span>
+                        <button type="button" class="equipment-button" disabled="@(current.Page == current.PageCount)"
+                                @onclick="() => ChangePageAsync(current.Page + 1)">Далее</button>
+                    </nav>
+                }
+            </div>
+        }
+    }
+</section>

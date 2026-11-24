@@ -1,27 +1,29 @@
-<section class="catalog" aria-labelledby="@SectionId">
+@using Warehouse.Frontend.Shared
+
+<section class="data-panel" aria-labelledby="@SectionId">
     <div class="catalog-heading">
         <h2 id="@SectionId">@Title</h2>
     </div>
 
     @if (loadFailed)
     {
-        <div class="catalog-state">
+        <div class="load-state">
             <p role="alert">Не удалось загрузить справочник.</p>
             <button type="button" class="retry-button" @onclick="LoadAsync">Повторить</button>
         </div>
     }
     else if (entries is null)
     {
-        <p class="catalog-state" role="status">Загрузка…</p>
+        <p class="load-state" role="status">Загрузка…</p>
     }
     else if (entries.Count == 0)
     {
-        <p class="catalog-state" role="status">@EmptyMessage</p>
+        <p class="load-state" role="status">@EmptyMessage</p>
     }
     else
     {
-        <div class="catalog-table-scroll" role="region" aria-labelledby="@SectionId" tabindex="0">
-            <table class="catalog-table" aria-labelledby="@SectionId">
+        <div class="data-table-scroll" role="region" aria-labelledby="@SectionId" tabindex="0">
+            <table class="data-table catalog-table" aria-labelledby="@SectionId">
                 <thead>
                     <tr>
                         <th scope="col">Наименование</th>
@@ -36,8 +38,8 @@
                         <tr @key="entry.Id">
                             <th scope="row">@entry.Name</th>
                             <td class="description-cell">@(string.IsNullOrWhiteSpace(entry.Description) ? "—" : entry.Description)</td>
-                            <td class="date-cell">@FormatDate(entry.CreatedAt)</td>
-                            <td class="date-cell">@FormatDate(entry.UpdatedAt)</td>
+                            <td class="date-cell">@DisplayFormat.Date(entry.CreatedAt)</td>
+                            <td class="date-cell">@DisplayFormat.Date(entry.UpdatedAt)</td>
                         </tr>
                     }
                 </tbody>

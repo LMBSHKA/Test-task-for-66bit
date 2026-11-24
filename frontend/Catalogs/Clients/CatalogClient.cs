@@ -1,7 +1,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using Warehouse.Frontend.Catalogs.Models;
 
-namespace Warehouse.Frontend.Catalogs;
+namespace Warehouse.Frontend.Catalogs.Clients;
 
 public sealed class CatalogClient(HttpClient http)
 {

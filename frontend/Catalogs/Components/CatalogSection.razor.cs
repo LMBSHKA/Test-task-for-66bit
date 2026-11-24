@@ -1,9 +1,9 @@
-using System.Globalization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Warehouse.Frontend.Catalogs.Models;
 
-namespace Warehouse.Frontend.Catalogs;
+namespace Warehouse.Frontend.Catalogs.Components;
 
 public partial class CatalogSection : IDisposable
 {
@@ -46,9 +46,6 @@ public partial class CatalogSection : IDisposable
             loadFailed = true;
         }
     }
-
-    private static string FormatDate(DateTimeOffset? value)
-        => value?.ToLocalTime().ToString("dd.MM.yyyy, HH:mm", CultureInfo.InvariantCulture) ?? "—";
 
     public void Dispose()
     {

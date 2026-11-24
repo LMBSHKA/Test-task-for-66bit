@@ -1,4 +1,4 @@
-namespace Warehouse.Frontend.Catalogs;
+namespace Warehouse.Frontend.Catalogs.Models;
 
 public sealed record CatalogEntry(
     Guid Id,
