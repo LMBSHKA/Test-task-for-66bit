@@ -1,7 +1,6 @@
 @page "/catalogs"
-@using Warehouse.Frontend.Catalogs.Clients
 @using Warehouse.Frontend.Catalogs.Components
-@inject CatalogClient Catalogs
+@using Warehouse.Frontend.Catalogs.Models
 
 <PageTitle>Справочники · Склад техники</PageTitle>
 
@@ -11,10 +10,10 @@
     <CatalogSection SectionId="manufacturers"
                     Title="Производители"
                     EmptyMessage="Производители пока не добавлены."
-                    LoadEntries="Catalogs.GetManufacturersAsync" />
+                    Kind="CatalogKind.Manufacturer" />
 
     <CatalogSection SectionId="equipment-types"
                     Title="Типы техники"
                     EmptyMessage="Типы техники пока не добавлены."
-                    LoadEntries="Catalogs.GetEquipmentTypesAsync" />
+                    Kind="CatalogKind.EquipmentType" />
 </div>

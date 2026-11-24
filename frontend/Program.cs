@@ -13,6 +13,7 @@ builder.Services.AddScoped(_ => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 builder.Services.AddScoped<CatalogClient>();
-builder.Services.AddScoped<EquipmentListClient>();
+builder.Services.AddScoped<EquipmentClient>();
+builder.Services.AddScoped<CountryClient>();
 
 await builder.Build().RunAsync();

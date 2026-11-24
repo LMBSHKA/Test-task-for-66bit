@@ -1,8 +1,10 @@
 @using Warehouse.Frontend.Shared
+@using Warehouse.Frontend.Shared.Components
 
 <section class="data-panel" aria-labelledby="@SectionId">
     <div class="catalog-heading">
         <h2 id="@SectionId">@Title</h2>
+        <button type="button" class="dialog-button button-primary" @onclick="() => OpenEditor(null)">@AddLabel</button>
     </div>
 
     @if (loadFailed)
@@ -30,6 +32,7 @@
                         <th scope="col">Описание</th>
                         <th scope="col">Дата создания</th>
                         <th scope="col">Дата обновления</th>
+                        <th scope="col">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,6 +43,14 @@
                             <td class="description-cell">@(string.IsNullOrWhiteSpace(entry.Description) ? "—" : entry.Description)</td>
                             <td class="date-cell">@DisplayFormat.Date(entry.CreatedAt)</td>
                             <td class="date-cell">@DisplayFormat.Date(entry.UpdatedAt)</td>
+                            <td>
+                                <div class="row-actions">
+                                    <button type="button" class="row-action" aria-label="@($"Изменить «{entry.Name}»")"
+                                            @onclick="() => OpenEditor(entry)">Изменить</button>
+                                    <button type="button" class="row-action row-delete" aria-label="@($"Удалить «{entry.Name}»")"
+                                            @onclick="() => pendingDeletion = entry">Удалить</button>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -47,3 +58,15 @@
         </div>
     }
 </section>
+
+@if (editorOpen)
+{
+    <CatalogEntryDialog Kind="Kind" Entry="editedEntry" Title="@EditorTitle"
+                        OnSaved="AfterSaveAsync" OnCancel="CloseEditor" />
+}
+
+@if (pendingDeletion is { } deletion)
+{
+    <ConfirmDeleteDialog ItemName="@deletion.Name" DeleteAsync="token => Catalogs.DeleteAsync(Kind, deletion.Id, token)"
+                         OnDeleted="AfterDeleteAsync" OnCancel="CloseDelete" />
+}

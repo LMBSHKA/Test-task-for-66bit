@@ -1,0 +1,126 @@
+@using Warehouse.Frontend.Shared.Components
+
+<ModalDialog @ref="dialog" Title="@(Entry is null ? "Новая позиция" : "Редактировать позицию")"
+             Busy="IsBusy" OnCancel="OnCancel">
+    @if (isLoadingOptions)
+    {
+        <div class="dialog-body"><p role="status">Загрузка справочников…</p></div>
+    }
+    else if (loadError is not null)
+    {
+        <div class="dialog-body">
+            <p class="dialog-error" role="alert">@loadError</p>
+            <button type="button" class="dialog-button" @onclick="LoadOptionsAsync">Повторить</button>
+        </div>
+    }
+    else
+    {
+        <EditForm EditContext="editContext" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+            <fieldset class="dialog-body form-fields equipment-form" disabled="@IsBusy">
+                @if (!HasCatalogOptions)
+                {
+                    <p class="form-wide form-note" role="status">Добавьте тип техники и производителя в справочниках.</p>
+                }
+
+                <div class="form-field form-wide">
+                    <label for="equipment-form-model">Модель</label>
+                    <InputText id="equipment-form-model" @bind-Value="form.Model" maxlength="200" autofocus />
+                    <ValidationMessage For="() => form.Model" />
+                </div>
+                <div class="form-field">
+                    <label for="equipment-form-type">Тип техники</label>
+                    <InputSelect id="equipment-form-type" @bind-Value="form.EquipmentTypeId">
+                        <option value="">Выберите тип</option>
+                        @foreach (var option in equipmentTypes)
+                        {
+                            <option @key="option.Id" value="@option.Id">@option.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.EquipmentTypeId" />
+                </div>
+                <div class="form-field">
+                    <label for="equipment-form-manufacturer">Производитель</label>
+                    <InputSelect id="equipment-form-manufacturer" @bind-Value="form.ManufacturerId">
+                        <option value="">Выберите производителя</option>
+                        @foreach (var option in manufacturers)
+                        {
+                            <option @key="option.Id" value="@option.Id">@option.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.ManufacturerId" />
+                </div>
+                <div class="form-field">
+                    <label for="equipment-form-country">Страна поставки</label>
+                    <InputSelect id="equipment-form-country" @bind-Value="form.SupplyCountryId">
+                        <option value="">Выберите страну</option>
+                        @foreach (var option in countries)
+                        {
+                            <option @key="option.Id" value="@option.Id">@option.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.SupplyCountryId" />
+                    @if (!showCountryInput)
+                    {
+                        <button type="button" class="row-action inline-action" @onclick="() => showCountryInput = true">
+                            Добавить страну
+                        </button>
+                    }
+                </div>
+                <div class="form-field">
+                    <label for="equipment-form-price">Цена</label>
+                    <InputNumber id="equipment-form-price" @bind-Value="form.Price" step="any" inputmode="decimal"
+                                 DisplayName="Цена" ParsingErrorMessage="Введите число в поле «{0}»." />
+                    <ValidationMessage For="() => form.Price" />
+                </div>
+
+                @if (showCountryInput)
+                {
+                    <div class="country-fields form-wide form-field">
+                        <label for="equipment-new-country">Название страны</label>
+                        <input id="equipment-new-country" type="text" @bind="countryName" @bind:event="oninput" />
+                        <div class="inline-actions">
+                            <button type="button" class="dialog-button" @onclick="AddCountryAsync">
+                                @(isAddingCountry ? "Добавление…" : "Сохранить страну")
+                            </button>
+                            <button type="button" class="dialog-button" @onclick="CloseCountryInput">Отменить добавление</button>
+                        </div>
+                        @if (countryError is not null)
+                        {
+                            <p class="dialog-error" role="alert">@countryError</p>
+                        }
+                    </div>
+                }
+
+                <div class="form-field form-wide">
+                    <label for="equipment-form-photo">Фотография</label>
+                    @if (photo is not null)
+                    {
+                        <img class="form-photo" src="@photo" alt="Фото позиции" />
+                    }
+                    <InputFile @key="photoInputVersion" id="equipment-form-photo" accept="image/jpeg,image/png"
+                               aria-describedby="equipment-photo-hint" OnChange="SelectPhoto" />
+                    <p id="equipment-photo-hint" class="form-note">JPEG или PNG до 5 МБ</p>
+                    @if (photo is not null || photoFile is not null || photoError is not null)
+                    {
+                        <button type="button" class="row-action row-delete inline-action" @onclick="RemovePhoto">Убрать фото</button>
+                    }
+                    @if (photoError is not null)
+                    {
+                        <p class="dialog-error" role="alert">@photoError</p>
+                    }
+                </div>
+                @if (saveError is not null)
+                {
+                    <p class="dialog-error form-wide" role="alert">@saveError</p>
+                }
+            </fieldset>
+            <footer class="dialog-footer">
+                <button type="button" class="dialog-button" disabled="@IsBusy" @onclick="() => dialog.CancelAsync()">Отмена</button>
+                <button type="submit" class="dialog-button button-primary" disabled="@(!CanSave)">
+                    @(isSaving ? "Сохранение…" : "Сохранить")
+                </button>
+            </footer>
+        </EditForm>
+    }
+</ModalDialog>

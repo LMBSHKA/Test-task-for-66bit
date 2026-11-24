@@ -1,0 +1,15 @@
+<ModalDialog @ref="dialog" Title="Удалить запись?" Busy="isDeleting" OnCancel="OnCancel">
+    <div class="dialog-body">
+        <p>Запись «@ItemName» будет удалена.</p>
+        @if (error is not null)
+        {
+            <p class="dialog-error" role="alert">@error</p>
+        }
+    </div>
+    <footer class="dialog-footer">
+        <button type="button" class="dialog-button" disabled="@isDeleting" @onclick="() => dialog.CancelAsync()" autofocus>Отмена</button>
+        <button type="button" class="dialog-button button-danger" disabled="@isDeleting" @onclick="ConfirmAsync">
+            @(isDeleting ? "Удаление…" : "Удалить")
+        </button>
+    </footer>
+</ModalDialog>

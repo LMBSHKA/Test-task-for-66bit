@@ -1,0 +1,27 @@
+@using Warehouse.Frontend.Shared.Components
+
+<ModalDialog @ref="dialog" Title="@Title" Busy="isSaving" OnCancel="OnCancel">
+    <EditForm Model="form" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <fieldset class="dialog-body form-fields" disabled="@isSaving">
+            <div class="form-field">
+                <label for="catalog-entry-name">Наименование</label>
+                <InputText id="catalog-entry-name" @bind-Value="form.Name" autofocus />
+                <ValidationMessage For="() => form.Name" />
+            </div>
+            <div class="form-field">
+                <label for="catalog-entry-description">Описание</label>
+                <InputTextArea id="catalog-entry-description" @bind-Value="form.Description" maxlength="2000" rows="4" />
+                <ValidationMessage For="() => form.Description" />
+            </div>
+            @if (error is not null)
+            {
+                <p class="dialog-error" role="alert">@error</p>
+            }
+        </fieldset>
+        <footer class="dialog-footer">
+            <button type="button" class="dialog-button" disabled="@isSaving" @onclick="() => dialog.CancelAsync()">Отмена</button>
+            <button type="submit" class="dialog-button button-primary" disabled="@isSaving">@(isSaving ? "Сохранение…" : "Сохранить")</button>
+        </footer>
+    </EditForm>
+</ModalDialog>

@@ -1,0 +1,8 @@
+<dialog @ref="element" class="modal-dialog" aria-labelledby="@headingId">
+    <header class="dialog-header">
+        <h2 id="@headingId">@Title</h2>
+        <button type="button" class="dialog-close" aria-label="Закрыть" data-modal-dismiss
+                disabled="@Busy" @onclick="CancelAsync">×</button>
+    </header>
+    @ChildContent
+</dialog>

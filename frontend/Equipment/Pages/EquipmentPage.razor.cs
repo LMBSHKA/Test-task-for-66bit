@@ -17,7 +17,7 @@ public partial class EquipmentPage : IDisposable
     };
 
     [Inject]
-    private EquipmentListClient Client { get; set; } = default!;
+    private EquipmentClient Client { get; set; } = default!;
 
     [Inject]
     private ILogger<EquipmentPage> Logger { get; set; } = default!;
@@ -25,6 +25,10 @@ public partial class EquipmentPage : IDisposable
     private readonly HashSet<Guid> unavailablePhotos = [];
     private CancellationTokenSource? activeLoad;
     private EquipmentList? result;
+    private EquipmentItem? editedItem;
+    private EquipmentItem? pendingDeletion;
+    private string? notification;
+    private bool editorOpen;
     private string search = string.Empty;
     private Guid? equipmentTypeId;
     private Guid? manufacturerId;
@@ -61,6 +65,42 @@ public partial class EquipmentPage : IDisposable
     }
 
     private Task RetryAsync() => LoadAsync();
+
+    private void OpenEditor(EquipmentItem? item)
+    {
+        notification = null;
+        editedItem = item;
+        editorOpen = true;
+    }
+
+    private void CloseEditor()
+    {
+        editorOpen = false;
+        editedItem = null;
+    }
+
+    private void OpenDelete(EquipmentItem item)
+    {
+        notification = null;
+        pendingDeletion = item;
+    }
+
+    private void CloseDelete() => pendingDeletion = null;
+
+    private Task AfterSaveAsync()
+    {
+        var created = editedItem is null;
+        CloseEditor();
+        notification = created ? "Позиция добавлена." : "Изменения сохранены.";
+        return created ? ChangePageAsync(1) : LoadAsync();
+    }
+
+    private Task AfterDeleteAsync()
+    {
+        CloseDelete();
+        notification = "Позиция удалена.";
+        return LoadAsync();
+    }
 
     private async Task LoadAsync(TimeSpan delay = default)
     {

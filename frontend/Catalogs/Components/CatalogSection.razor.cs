@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Warehouse.Frontend.Catalogs.Clients;
 using Warehouse.Frontend.Catalogs.Models;
 
 namespace Warehouse.Frontend.Catalogs.Components;
@@ -17,14 +18,24 @@ public partial class CatalogSection : IDisposable
     public string EmptyMessage { get; set; } = default!;
 
     [Parameter, EditorRequired]
-    public Func<CancellationToken, Task<IReadOnlyList<CatalogEntry>>> LoadEntries { get; set; } = default!;
+    public CatalogKind Kind { get; set; }
+
+    [Inject]
+    private CatalogClient Catalogs { get; set; } = default!;
 
     [Inject]
     private ILogger<CatalogSection> Logger { get; set; } = default!;
 
     private readonly CancellationTokenSource lifetime = new();
     private IReadOnlyList<CatalogEntry>? entries;
+    private CatalogEntry? editedEntry;
+    private CatalogEntry? pendingDeletion;
+    private bool editorOpen;
     private bool loadFailed;
+
+    private string EntryLabel => Kind == CatalogKind.Manufacturer ? "производителя" : "тип техники";
+    private string AddLabel => $"Добавить {EntryLabel}";
+    private string EditorTitle => editedEntry is null ? AddLabel : $"Редактировать {EntryLabel}";
 
     protected override Task OnInitializedAsync() => LoadAsync();
 
@@ -35,7 +46,7 @@ public partial class CatalogSection : IDisposable
 
         try
         {
-            entries = await LoadEntries(cancellationToken);
+            entries = await Catalogs.GetEntriesAsync(Kind, cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -45,6 +56,32 @@ public partial class CatalogSection : IDisposable
             Logger.LogWarning(exception, "Failed to load catalog {CatalogId}.", SectionId);
             loadFailed = true;
         }
+    }
+
+    private void OpenEditor(CatalogEntry? entry)
+    {
+        editedEntry = entry;
+        editorOpen = true;
+    }
+
+    private void CloseEditor()
+    {
+        editorOpen = false;
+        editedEntry = null;
+    }
+
+    private void CloseDelete() => pendingDeletion = null;
+
+    private Task AfterSaveAsync()
+    {
+        CloseEditor();
+        return LoadAsync();
+    }
+
+    private Task AfterDeleteAsync()
+    {
+        CloseDelete();
+        return LoadAsync();
     }
 
     public void Dispose()
