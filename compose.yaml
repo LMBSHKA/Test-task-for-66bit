@@ -30,6 +30,14 @@ services:
     volumes:
       - equipment_photos:/app/wwwroot/uploads
 
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:${WAREHOUSE_FRONTEND_PORT:-8081}:80"
+
 volumes:
   postgres_data:
   equipment_photos:

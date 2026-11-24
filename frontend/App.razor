@@ -1,0 +1,15 @@
+<header class="site-header">
+    <div class="site-header-inner">
+        <span class="warehouse-mark" aria-hidden="true"></span>
+        <span>Склад техники</span>
+    </div>
+</header>
+
+<main class="main-content">
+    <Router AppAssembly="typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="routeData" />
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+    </Router>
+</main>

@@ -1,0 +1,47 @@
+<section class="catalog" aria-labelledby="@SectionId">
+    <div class="catalog-heading">
+        <h2 id="@SectionId">@Title</h2>
+    </div>
+
+    @if (loadFailed)
+    {
+        <div class="catalog-state">
+            <p role="alert">Не удалось загрузить справочник.</p>
+            <button type="button" class="retry-button" @onclick="LoadAsync">Повторить</button>
+        </div>
+    }
+    else if (entries is null)
+    {
+        <p class="catalog-state" role="status">Загрузка…</p>
+    }
+    else if (entries.Count == 0)
+    {
+        <p class="catalog-state" role="status">@EmptyMessage</p>
+    }
+    else
+    {
+        <div class="catalog-table-scroll" role="region" aria-labelledby="@SectionId" tabindex="0">
+            <table class="catalog-table" aria-labelledby="@SectionId">
+                <thead>
+                    <tr>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Описание</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col">Дата обновления</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in entries)
+                    {
+                        <tr @key="entry.Id">
+                            <th scope="row">@entry.Name</th>
+                            <td class="description-cell">@(string.IsNullOrWhiteSpace(entry.Description) ? "—" : entry.Description)</td>
+                            <td class="date-cell">@FormatDate(entry.CreatedAt)</td>
+                            <td class="date-cell">@FormatDate(entry.UpdatedAt)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

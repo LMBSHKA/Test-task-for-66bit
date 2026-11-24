@@ -50,12 +50,7 @@ namespace Application.Services
 
             await _uow.SaveChangesAsync(ct);
 
-            return new CatalogEntryDto
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description
-            };
+            return ToDto(entity);
         }
 
         public async Task<DeleteCatalogEntryResult> Delete(Guid equipmentTypeId, CancellationToken ct)
@@ -77,13 +72,17 @@ namespace Application.Services
 
             return new AllCatalogEntryDto
             {
-                ListCatalogEntry = entities.Select(entity => new CatalogEntryDto
-                {
-                    Id = entity.Id,
-                    Name = entity.Name,
-                    Description = entity.Description
-                }).ToList()
+                ListCatalogEntry = entities.Select(ToDto).ToList()
             };
         }
+
+        private static CatalogEntryDto ToDto(TEntity entity) => new()
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            Description = entity.Description,
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt
+        };
     }
 }

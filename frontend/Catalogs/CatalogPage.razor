@@ -1,0 +1,19 @@
+@page "/"
+@page "/catalogs"
+@inject CatalogClient Catalogs
+
+<PageTitle>Справочники · Склад техники</PageTitle>
+
+<h1>Справочники</h1>
+
+<div class="catalog-list">
+    <CatalogSection SectionId="manufacturers"
+                    Title="Производители"
+                    EmptyMessage="Производители пока не добавлены."
+                    LoadEntries="Catalogs.GetManufacturersAsync" />
+
+    <CatalogSection SectionId="equipment-types"
+                    Title="Типы техники"
+                    EmptyMessage="Типы техники пока не добавлены."
+                    LoadEntries="Catalogs.GetEquipmentTypesAsync" />
+</div>
