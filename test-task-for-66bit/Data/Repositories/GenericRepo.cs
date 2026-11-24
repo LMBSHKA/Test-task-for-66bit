@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace Data.Repositories
 {
+    // Собирает повторяющиеся операции над DbSet. Запросы для конкретных сущностей определены в их репозиториях
     public class GenericRepo<TEntity> : IGenericRepo<TEntity> where TEntity : class
     {
         protected readonly DbSet<TEntity> _dbContext;

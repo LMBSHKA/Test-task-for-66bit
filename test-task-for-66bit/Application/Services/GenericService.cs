@@ -6,6 +6,7 @@ using Models.Interfaces;
 
 namespace Application.Services
 {
+    // Типы техники и производители используют общий контракт ICatalogEntry и единые правила работы со справочниками
     public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : class, ICatalogEntry, new()
     {
         private readonly IWarehouseUnitOfWork _uow;
