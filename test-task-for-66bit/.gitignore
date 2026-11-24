@@ -435,6 +435,7 @@ redis/
 # --- wwwroot: игнорировать загруженные файлы, но не саму структуру ---
 
 # игнорировать всё содержимое upload-папок
+API/wwwroot/uploads/
 wwwroot/uploads/*
 wwwroot/uploads/**/*
 # кроме пустых файлов .gitkeep

@@ -15,6 +15,7 @@ namespace Application
             services.AddScoped<IManufacturerService, ManufacturerService>();
             services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
             services.AddScoped<IEquipmentItemService, EquipmentItemService>();
+            services.AddScoped<IEquipmentPhotoService, EquipmentPhotoService>();
             services.AddScoped<IValidator<CreateEquipmentItemDto>, CreateEquipmentItemValidator>();
             services.AddScoped<IValidator<UpdateEquipmentItemDto>, UpdateEquipmentItemValidator>();
             services.AddScoped<ICountryService, CountryService>();

@@ -24,6 +24,23 @@ namespace API.Controllers
             _equipmentItemService = equipmentItemService;
         }
 
+        [HttpPost("upload-photo")]
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(6 * 1024 * 1024)]
+        public async Task<IActionResult> UploadPhoto(IFormFile? file, [FromServices] IEquipmentPhotoService photoService,
+            CancellationToken ct)
+        {
+            await using var content = file?.OpenReadStream();
+            var (path, error) = await photoService.UploadAsync(content, file?.Length ?? 0, ct);
+            if (error != null)
+            {
+                ModelState.AddModelError(nameof(file), error);
+                return ValidationProblem(ModelState);
+            }
+
+            return Ok(new { url = Url.Content($"~/{path}") });
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> Create(CreateEquipmentItemDto createEquipmentItem, CancellationToken ct)
         {

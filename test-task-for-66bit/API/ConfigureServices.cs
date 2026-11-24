@@ -1,5 +1,7 @@
 ﻿using Application;
+using Application.Interfaces.Storage;
 using Data;
+using Data.Storage;
 
 namespace API
 {
@@ -9,6 +11,8 @@ namespace API
         {
             StartupApplication.Configure(services);
             StartupData.Configure(services);
+            services.AddScoped<IEquipmentPhotoStorage>(provider => new LocalEquipmentPhotoStorage(
+                provider.GetRequiredService<IWebHostEnvironment>().WebRootPath));
         }
     }
 }

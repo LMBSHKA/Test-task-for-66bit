@@ -6,7 +6,11 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            WebRootPath = "wwwroot"
+        });
 
         // Add services to the container.
 
@@ -36,6 +40,7 @@ internal class Program
 
         app.UseHttpsRedirection();
 
+        app.UseStaticFiles();
         app.UseAuthorization();
 
         app.MapControllers();
