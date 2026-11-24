@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -31,6 +31,12 @@ internal class Program
 
         var app = builder.Build();
 
+        await using (var scope = app.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await db.Database.MigrateAsync();
+        }
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -45,6 +51,6 @@ internal class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
     }
 }
