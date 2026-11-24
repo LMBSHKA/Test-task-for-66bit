@@ -14,10 +14,8 @@ namespace Models.Entities
         public Guid SupplyCountryId { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime DeletedAt { get; set; } = DateTime.MinValue;
 
         public EquipmentType EquipmentType { get; set; } = null!;
         public Manufacturer Manufacturer { get; set; } = null!;

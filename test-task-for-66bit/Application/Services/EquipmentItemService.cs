@@ -42,7 +42,7 @@ namespace Application.Services
             Guid equipmentItemId, CancellationToken ct)
         {
             var equipmentItem = await _uow.EquipmentItems.FindAsync(equipmentItemId, ct);
-            if (equipmentItem == null || equipmentItem.IsDeleted)
+            if (equipmentItem == null)
                 return UpdateEquipmentItemResult.NotFound;
 
             if (!await ReferencesExist(updateEquipmentItem.EquipmentTypeId, updateEquipmentItem.ManufacturerId,
@@ -70,14 +70,10 @@ namespace Application.Services
         {
             var equipmentItem = await _uow.EquipmentItems.FindAsync(equipmentItemId, ct);
 
-            if (equipmentItem == null || equipmentItem.IsDeleted)
+            if (equipmentItem == null)
                 return false;
 
-            var now = DateTime.UtcNow;
-            equipmentItem.IsDeleted = true;
-            equipmentItem.DeletedAt = now;
-            equipmentItem.UpdatedAt = now;
-
+            _uow.EquipmentItems.Remove(equipmentItem);
             await _uow.SaveChangesAsync(ct);
 
             return true;
